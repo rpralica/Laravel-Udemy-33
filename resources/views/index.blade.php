@@ -6,7 +6,7 @@
     <div>
       @forelse ($tasks as $task )
      <div class="container offset-1">
-      <li class="list-group-item"> <a href="{{route('tasks.show',['id'=>$task->id])}}"><strong>{{$task->title}}</strong></a></li>
+      <li class="list-group-item"> <a href="{{route('tasks.show',['task'=>$task])}}"><strong>{{$task->title}}</strong></a></li>
     </div>
 
     @empty

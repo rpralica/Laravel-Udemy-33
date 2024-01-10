@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Http\Request;
 use App\Models\Task;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Http\Requests\TaskRequest;
 use Illuminate\Support\Facades\Route;
 /*
 |--------------------------------------------------------------------------
@@ -23,32 +24,35 @@ Route::get('/tasks', function () {
     return view('index', ['tasks' => Task::all()]);
 })->name('tasks.index');
 
-Route::view('/tasks/create', 'create')->name('tasks.create');
+Route::view('/create', 'create')->name('tasks.create');
 
-Route::get('/task/{id}', function ($id) {
+Route::get('/edit/{task}', function (Task $task) {
+    return view('/edit', ['task' => $task]);
+})->name('tasks.edit');
+
+Route::get('/tasks/{task}', function (Task $task) {
 
 
-    return view('/task', ['task' => \App\Models\Task::findOrFail($id)]);
+    return view('/task', ['task' => $task]);
 })->name('tasks.show');
+
+
+
 
 Route::get('/', function () {
     return redirect()->route("tasks.index");
 });
 
-Route::post('/tasks', function (Request $request) {
-    $data = $request->validate([
-        'title' =>[ 'required','min:5','max:255'],
-        'description' => 'required',
-        'long_description' => 'required'
-    ]);
-    $task = new Task();
-    $task->title = $data['title'];
-    $task->description = $data['description'];
-    $task->long_description = $data['long_description'];
-    $task->save();
-    return redirect()->route('tasks.show', ['id' => $task->id]);
+Route::post('/tasks', function (TaskRequest $request) {
+    $task=Task::create($request->validated());
+
+    return redirect()->route('tasks.show', ['task' => $task]);
 })->name('tasks.store');
 
+Route::put('/tasks/{task}', function (Task $task, TaskRequest $request) {
 
+   $task->update($request->validated());
+    return redirect()->route('tasks.index');
+})->name('tasks.update');
 
-// &  lekcija 33 Edit Form
+//!  lekcija 33 Edit Form
